@@ -1,37 +1,28 @@
 import { baseUrl, getImageUrl, NOT_IMAGE } from "@/utils/constants";
-import { resolveCardPrice } from "@/utils/helper";
 import { ProductCard } from "./ProductCard";
-import { ProductNode } from "../type";
 
 export default function ProductGridItems({
   products,
-  backUrl,
 }: {
-  products: ProductNode[];
-  backUrl?: string;
+  products: any;
 }) {
-  return products.map((product, index) => {
+  return products.map((product: any, index: number) => {
+
     const imageUrl = getImageUrl(product?.baseImageUrl, baseUrl, NOT_IMAGE);
-    const price = resolveCardPrice(product);
-    const currency = product?.priceHtml?.currencyCode ?? "USD";
+    const price =
+      product?.type === "configurable"
+        ? product?.minimumPrice ?? "0"
+        : product?.price ?? "0";
+    const currency = product?.priceHtml?.currencyCode;
     return (
       <ProductCard
-        key={product?.id ?? index}
+        key={index}
         currency={currency}
         imageUrl={imageUrl || ""}
-        price={String(price)}
-        specialPrice={
-          product?.minimumPrice ? String(product.minimumPrice) : undefined
-        }
-        product={{
-          urlKey: product.urlKey || product.sku,
-          name: product?.name || product.sku,
-          id: product.id,
-          type: product.type,
-          isSaleable: product?.isSaleable,
-        }}
+        price={price}
+        specialPrice={product?.minimumPrice}
+        product={product}
         priority={index < 4}
-        backUrl={backUrl}
       />
     );
   });

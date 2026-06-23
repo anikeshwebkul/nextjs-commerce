@@ -42,11 +42,11 @@ export const authOptions: NextAuthOptions = {
         }
 
         return {
-          id: data.id,
+          id: data.id, // required by NextAuth
           email: credentials.username,
-          name: credentials.username,
+          name: credentials.username, // Using email as name since firstName/lastName are missing in response
           apiToken: data.apiToken,
-          accessToken: data.token,
+          accessToken: data.token, // Sanctum token
           role: "customer",
         };
       },

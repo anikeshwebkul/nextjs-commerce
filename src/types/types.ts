@@ -29,6 +29,9 @@ export type Cart = Omit<BagistoCart, "lines"> & {
 };
 
 
+/**
+ * Sorting & filtration constants
+ */
 export type SortFilterItemTypes = {
   key: string;
   title: string;
@@ -271,6 +274,7 @@ export type ProductDetailsInfo = Omit<
 export type ProductOption = {
   id: string;
   name: string;
+  // values: string[];
   displayName: string;
   values: ProductOptionValues[];
 };

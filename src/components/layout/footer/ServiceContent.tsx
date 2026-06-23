@@ -59,14 +59,9 @@ const ServiceCarouselRender: FC<ServiceContenRenderTypes> = ({
   const { options } = serviceList;
   const { services } = options;
 
-  const socialKeywords = ["facebook", "instagram", "twitter", "x"];
-  const filteredServices = services?.filter(
-    (service: any) => !socialKeywords.includes(service.title?.toLowerCase())
-  );
-
   return (
     <div className="flex items-center justify-center gap-6 max-lg:flex-wrap max-md:grid max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-8 max-md:text-center md:gap-10 lg:gap-20">
-      {filteredServices?.map((list: any, index: number) => {
+      {services?.map((list, index: number) => {
         const iconKey = list?.service_icon;
 
         return (

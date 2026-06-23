@@ -2,37 +2,32 @@ import LoadingDots from "@components/common/icons/LoadingDots";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { throttle } from "@utils/helper";
 import { useAddProduct } from "@utils/hooks/useAddToCart";
-import type { CartItemEdge } from "@/types/cart/type";
 import clsx from "clsx";
 
 function SubmitButton({
   type,
   handleUpdateCart,
   pending,
-  disabled,
 }: {
   type: "plus" | "minus";
   handleUpdateCart: (_: "plus" | "minus") => void;
   pending: boolean;
-  disabled?: boolean;
 }) {
   return (
     <button
-      aria-disabled={pending || disabled}
+      aria-disabled={pending}
       aria-label={
         type === "plus" ? "Increase item quantity" : "Reduce item quantity"
       }
       className={clsx(
-        "ease flex h-full min-w-9 max-w-9 flex-none items-center justify-center rounded-full px-2 transition-all duration-200",
+        "ease flex h-full cursor-pointer min-w-[36px] max-w-[36px] flex-none items-center justify-center rounded-full px-2 transition-all duration-200 hover:border-neutral-800 hover:opacity-80",
         {
           "cursor-wait": pending,
-          "cursor-not-allowed opacity-50": disabled,
-          "cursor-pointer hover:border-neutral-800 hover:opacity-80": !pending && !disabled,
           "ml-auto": type === "minus",
         }
       )}
       type="button"
-      onClick={() => !disabled && handleUpdateCart(type)}
+      onClick={() => handleUpdateCart(type)}
     >
       {pending ? (
         <LoadingDots className="bg-black dark:bg-white" />
@@ -45,46 +40,46 @@ function SubmitButton({
   );
 }
 
+interface CartItemEdge {
+  node: {
+    id: string;
+    quantity: number;
+    name: string;
+    price: number;
+  };
+}
+
 export function EditItemQuantityButton({
   item,
   type,
-  disabled,
 }: {
   item: CartItemEdge;
   type: "plus" | "minus";
-  disabled?: boolean;
 }) {
-  const { onUpdateCart, isUpdateLoading, onAddToRemove, isRemoveLoading } = useAddProduct();
+  const { onUpdateCart, isUpdateLoading } = useAddProduct();
 
+  
   const handleUpdateCart = throttle((type: "plus" | "minus") => {
     let qty = item?.node?.quantity;
-    if (!isUpdateLoading && !isRemoveLoading && !disabled) {
+    if(!isUpdateLoading){
       if (type === "plus") {
         qty += 1;
-        onUpdateCart({
-          cartItemId: Number(item?.node?.id),
-          quantity: qty,
-        });
       } else if (type === "minus") {
-        if (qty === 1) {
-          onAddToRemove(String(item?.node?.id));
-        } else {
-          qty -= 1;
-          onUpdateCart({
-            cartItemId: Number(item?.node?.id),
-            quantity: qty,
-          });
-        }
+        qty -= 1;
       }
+      onUpdateCart({
+        cartItemId: Number(item?.node?.id),
+        quantity: qty,
+      });
     }
   }, 200);
+
 
   return (
     <SubmitButton
       handleUpdateCart={handleUpdateCart}
-      pending={isUpdateLoading || isRemoveLoading}
+      pending={isUpdateLoading}
       type={type}
-      disabled={disabled}
     />
   );
 }

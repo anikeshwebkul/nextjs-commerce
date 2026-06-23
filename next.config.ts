@@ -7,35 +7,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   images: {
-    unoptimized: false,
-    remotePatterns: [
-      ...(process.env.NEXT_PUBLIC_BAGISTO_ENDPOINT
-        ? (() => {
-            try {
-              const url = new URL(process.env.NEXT_PUBLIC_BAGISTO_ENDPOINT);
-              return [
-                {
-                  protocol: (url.protocol.replace(":", "") === "http" ? "http" : "https") as "http" | "https",
-                  hostname: url.hostname,
-                }
-              ];
-            } catch {
-              console.warn(
-                "Invalid NEXT_PUBLIC_BAGISTO_ENDPOINT URL:",
-                process.env.NEXT_PUBLIC_BAGISTO_ENDPOINT,
-              );
-              return [];
-            }
-          })()
-        : []),
-    ],
+    unoptimized: true,
+    remotePatterns: [],
   },
   async headers() {
     return configHeader;
   },
   compress: true, 
   experimental: {
-    optimizePackageImports: ["@heroui/react", "framer-motion", "lucide-react"],
+    optimizePackageImports: ["lodash", "date-fns"],
     serverActions: {
       bodySizeLimit: "2mb",
     },

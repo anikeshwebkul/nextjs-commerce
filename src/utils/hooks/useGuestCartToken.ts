@@ -8,6 +8,9 @@ import { setCookie, deleteCookie, getNativeCookie } from "../getCartToken";
 
 
 
+// ---------------------------
+// Main Hook
+// ---------------------------
 export const useGuestCartToken = () => {
   const [token, setToken] = useState<string | null>(null);
   const [cartId, setCartId] = useState<number | null>(null);
@@ -22,6 +25,7 @@ export const useGuestCartToken = () => {
 
     tokenPromiseRef.current = (async () => {
       if (tokenCreatedRef.current) {
+        // Return existing raw token from cookie
         const cookieVal = getNativeCookie(GUEST_CART_TOKEN);
         if (cookieVal) {
           const isGuest = getNativeCookie(IS_GUEST) !== "false";
@@ -57,6 +61,7 @@ export const useGuestCartToken = () => {
         setCookie(GUEST_CART_ID, String(newCartId));
         setCookie(IS_GUEST, String(cart?.isGuest));
 
+        // State and return should be the RAW token
         setToken(cart.sessionToken);
         setCartId(newCartId);
         return cart.sessionToken;
@@ -80,6 +85,7 @@ export const useGuestCartToken = () => {
 
     tokenCreatedRef.current = false;
 
+    // delete old
     deleteCookie(GUEST_CART_TOKEN);
     deleteCookie(GUEST_CART_ID);
 
@@ -100,7 +106,6 @@ export const useGuestCartToken = () => {
       }>(cookieToken, isGuest);
 
       if (decoded) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setToken(decoded.sessionToken);
         setCartId(decoded.cartId);
       }

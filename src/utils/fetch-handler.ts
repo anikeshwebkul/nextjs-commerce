@@ -1,7 +1,7 @@
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 interface FetchHandlerOptions<TBody = unknown> {
-  url: string;
+  url: string; // API route, e.g., "addToCart"
   method?: Method;
   body?: TBody;
   headers?: Record<string, string>;

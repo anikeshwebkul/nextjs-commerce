@@ -2,7 +2,7 @@
 
 import { GET_CHECKOUT_ADDRESSES } from "@/graphql";
 import { CheckoutAddressNode } from "@/types/checkout/type";
-import { useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery } from "@apollo/client";
 import { useCallback } from "react";
 
 export const useAddress = () => {
@@ -24,7 +24,7 @@ export const useAddress = () => {
 
   return {
     addresses:
-      (data as any)?.collectionGetCheckoutAddresses?.edges?.map(
+      data?.collectionGetCheckoutAddresses?.edges?.map(
         (edge: { node: CheckoutAddressNode }) => edge.node
       ) || [],
     isLoading,

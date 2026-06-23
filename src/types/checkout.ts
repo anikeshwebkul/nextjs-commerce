@@ -1,3 +1,4 @@
+// Checkout Types
 
 export interface PaymentMethod {
   method: string;

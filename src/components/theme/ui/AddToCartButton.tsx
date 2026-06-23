@@ -34,7 +34,6 @@ export default function AddToCartButton({
       productId: productId.split("/").pop() || "",
       quantity: 1,
       token: session?.user?.token ?? undefined,
-      productType: productType || "simple",
     });
   };
 

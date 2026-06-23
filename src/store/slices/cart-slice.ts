@@ -73,9 +73,11 @@ const cartSlice = createSlice({
     },
 
     resetAddressStep(_state) {
+      // Intentionally kept empty to retain previous selections while allowing re-entry to the step
     },
 
     resetShippingStep(_state) {
+      // Intentionally kept empty to retain previous selections while allowing re-entry to the step
     },
 
   },

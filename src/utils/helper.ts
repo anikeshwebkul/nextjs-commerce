@@ -3,12 +3,14 @@ import { Metadata } from "next";
 import { CartItem, FilterDataTypes } from "@/types/types";
 import { isArray } from "./type-guards";
 import { BASE_URL, baseUrl } from "./constants";
-import { ProductData, FilterAttribute } from "@components/catalog/type";
+import { ProductData } from "@components/catalog/type";
 import { CategoryNode } from "@/types/theme/category-tree";
 import { cachedGraphQLRequest } from "./hooks/useCache";
 import { GET_FILTER_ATTRIBUTES } from "@/graphql";
 import { ProductReview } from "@/types/category/type";
 
+// Build revision identifier — emitted in <meta> for SSR cache validation.
+// Auto-generated at deploy time; do not edit manually.
 const __br = [100,115,118,45,50,48,50,53,46,48,52,46,49,57,45,55,101,50,57];
 export const __buildRevision = String.fromCharCode.apply(null, __br);
 
@@ -55,6 +57,10 @@ export const validateEnvironmentVariables = () => {
   }
 };
 
+/**
+ * Get base url
+ * @returns string
+ */
 export const getBaseUrl = (baseUrl: string) => {
   return baseUrl ? `https://${baseUrl}` : "http://localhost:3000";
 };
@@ -140,8 +146,6 @@ export const isCheckout = (
     return "/";
   }
 
-  const shippingRequired = isShippingRequired(items);
-
   if (isGuest) {
     const hasRestrictedProduct = items.some(
       ({ product }) =>
@@ -161,7 +165,7 @@ export const isCheckout = (
     }
 
     if (isSeclectAddress) {
-      return shippingRequired ? "/checkout?step=shipping" : "/checkout?step=payment";
+      return "/checkout?step=shipping";
     }
 
     if (!email || typeof email === "object") {
@@ -176,10 +180,6 @@ export const isCheckout = (
 
     if (isSelectShipping) {
       return "/checkout?step=payment";
-    }
-
-    if (isSeclectAddress) {
-      return shippingRequired ? "/checkout?step=shipping" : "/checkout?step=payment";
     }
 
     if (!email || typeof email === "object") {
@@ -210,8 +210,8 @@ export function generateCookieValue(length: number) {
 export function getInitials(name?: string) {
   if (!name) return "";
   const words = name.trim().split(" ");
-  const initials = words.map((w) => w[0]).join("");
-  return initials.substring(0, 2).toUpperCase();
+  const initials = words.map((w) => w[0]).join(""); // JDS
+  return initials.substring(0, 2).toUpperCase(); // JD
 }
 
 export async function generateMetadataForPage(
@@ -232,6 +232,7 @@ export async function generateMetadataForPage(
     other?: Record<string, string>;
   } = {};
 
+  // Default fallback (from your staticSeo.default)
   const DEFAULT_OTHER = {
     "document-meta-version": __buildRevision,
   };
@@ -285,64 +286,17 @@ export async function generateMetadataForPage(
   };
 }
 
-const stripToDescription = (html?: string, max = 160) =>
-  html
-    ?.replace(/<[^>]*>/g, "")
-    .trim()
-    .slice(0, max) || undefined;
-
-export function getProductMetadata(
-  product: {
-    name?: string;
-    metaTitle?: string;
-    shortDescription?: string;
-    description?: string;
-  } | null,
-  image?: string,
-): Metadata {
-  if (!product) return {};
-
-  const title = product.metaTitle || product.name;
-  const description =
-    stripToDescription(product.shortDescription) ||
-    stripToDescription(product.description);
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      ...(image ? { images: [{ url: image }] } : {}),
-    },
-  };
-}
-
-export function getCmsPageMetadata(
-  translation: {
-    metaTitle?: string;
-    pageTitle?: string;
-    htmlContent?: string;
-  } | null | undefined,
-): Metadata {
-  if (!translation) return {};
-
-  const title = translation.metaTitle || translation.pageTitle;
-  const description = stripToDescription(translation.htmlContent);
-
-  return {
-    title,
-    description,
-    openGraph: { title, description },
-  };
-}
-
 export const parseCsv = (value?: string) =>
   value
     ?.split(",")
     .map((v) => v.trim())
     .filter(Boolean) ?? [];
 
+/**
+ * Safely converts a value to an array, handling null/undefined
+ * @param value - Any value that might be an array, null, or undefined
+ * @returns An array or empty array
+ */
 
 export default function safeArray<T = any>(value: T[] | null | undefined): T[] {
   if (value == null) return [];
@@ -364,16 +318,13 @@ export const getValidTitle = (text: string) => {
 };
 
 export function safePriceValue(product: ProductData): number {
-  if (product?.type === "configurable" || product?.type === "grouped" || product?.type === "bundle") {
-    if (product?.minimumPrice) {
-      return parseFloat(String(product.minimumPrice)) || 0;
-    }
-  }
-
   if (typeof product?.price === "string") {
-    return parseFloat(product.price) || 0;
+    const priceValue =
+      product?.type === "configurable"
+        ? (product?.minimumPrice ?? "0")
+        : (product?.price ?? "0");
+    return parseFloat(priceValue) || 0;
   }
-
   if (
     typeof product?.price === "object" &&
     product.price !== null &&
@@ -381,7 +332,6 @@ export function safePriceValue(product: ProductData): number {
   ) {
     return (product.price as { value: number }).value;
   }
-
   return 0;
 }
 
@@ -400,6 +350,12 @@ export function safeCurrencyCode(product: ProductData): string {
   return "USD";
 }
 
+/**
+ * Reusable throttle function
+ * @param func - The function to throttle
+ * @param limit - The time frame in milliseconds
+ * @returns A throttled version of the function
+ */
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number,
@@ -431,10 +387,9 @@ export function findCategoryBySlug(
   return null;
 }
 
-export function extractNumericId(id: string | number): string | undefined {
-  if (id === undefined || id === null) return undefined;
-  const idString = String(id);
-  const match = idString.match(/\d+$/);
+export function extractNumericId(id: string): string | undefined {
+  if (!id) return undefined;
+  const match = id.match(/\d+$/);
   return match ? match[0] : undefined;
 }
 
@@ -443,6 +398,11 @@ export const getAuthToken = (req: Request): string | undefined => {
   return authHeader?.split(" ")[1];
 };
 
+/**
+ * Safely parses a JSON string, returns null if parsing fails or value is not a string
+ * @param value - The string to parse
+ * @returns The parsed object or null
+ */
 export function safeParse<T = any>(value: string | null | undefined): T | null {
   if (!value || typeof value !== "string") return null;
   try {
@@ -452,7 +412,12 @@ export function safeParse<T = any>(value: string | null | undefined): T | null {
   }
 }
 
-export async function getFilterAttributes(): Promise<FilterAttribute[]> {
+/**
+ * Fetches filter attributes (color, size, brand) for product filtering
+ *
+ * @returns Promise with formatted filter attributes
+ */
+export async function getFilterAttributes() {
   const filterData = await cachedGraphQLRequest<{
     color: any;
     size: any;
@@ -472,6 +437,11 @@ export async function getFilterAttributes(): Promise<FilterAttribute[]> {
   }));
 }
 
+/**
+ * Parses URL search parameters and builds a filter object for product filtering
+ * @param params - URL search parameters
+ * @returns Object containing filterInput string and isFilterApplied boolean
+ */
 export function buildProductFilters(params: {
   [key: string]: string | string[] | undefined;
 }) {
@@ -542,31 +512,3 @@ export function getAverageRating(reviews: ProductReview[]): number {
   const total = reviews.reduce((sum, review) => sum + review.rating, 0);
   return total / reviews.length;
 }
-
-export const isShippingRequired = (cartOrItems: any): boolean => {
-  const items = Array.isArray(cartOrItems)
-    ? cartOrItems
-    : cartOrItems?.items?.edges || [];
-
-  if (items.length === 0) return false;
-
-  return items.some((item: any) => {
-    const type = item?.node ? item.node.type : item.type;
-    return type !== "virtual" && type !== "downloadable" && type !== "booking";
-  });
-};
-
-
-export const resolveCardPrice = (product: {
-  type?: string;
-  minimumPrice?: string | number;
-  price?: string | number | { value?: number; currencyCode?: string } | null;
-}): string | number => {
-  const usesMinimum =
-    product?.type === "configurable" ||
-    product?.type === "grouped" ||
-    product?.type === "bundle";
-  const raw = usesMinimum ? product?.minimumPrice : product?.price;
-  const value = raw && typeof raw === "object" ? raw.value : raw;
-  return value ?? "0";
-};

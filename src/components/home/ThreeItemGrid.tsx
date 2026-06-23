@@ -1,6 +1,8 @@
+"use client"
+
 import { FC } from "react";
 import Link from "next/link";
-
+import clsx from "clsx";
 import { GridTileImage } from "@/components/theme/ui/grid/Tile";
 
 interface ThreeItemGridProps {
@@ -62,7 +64,7 @@ function ThreeItemGridItem({ product, size, priority }: {
                     label={{
                         position: size === 'full' ? 'center' : 'bottom',
                         title: product.name,
-                        amount: String(product.type === 'configurable' || product.type === 'grouped' || product.type === 'bundle' ? (product.minimumPrice || '0') : (product.price || '0')),
+                        amount: String(product.type === 'configurable' ? (product.minimumPrice || '0') : (product.price || '0')),
                         currencyCode: 'USD',
                     }}
                 />
@@ -72,27 +74,36 @@ function ThreeItemGridItem({ product, size, priority }: {
 }
 
 
-function MobileThreeItemGridItem({ product, priority }: {
+function MobileThreeItemGridItem({ product, size, priority }: {
     product: ProductItem;
+    size: 'full' | 'half';
     priority?: boolean;
 }) {
+
     return (
-        <div className="col-span-1">
+        <div
+            className={
+                size === 'full' ? 'col-span-1 xxs:col-span-2 order-2' : 'col-span-1'
+            }
+        >
             <Link
-                className="relative block h-full w-full aspect-[380/280]"
+                className={clsx(
+                    "relative block h-full w-full aspect-[380/280]",
+                    size === "half" && "xxs:aspect-[182/280]"
+                )}
                 href={`/product/${product.urlKey}`}
                 aria-label={`${product?.name}`}
             >
                 <GridTileImage
                     src={product.baseImageUrl}
-                    className="object-cover"
+                    className="object-cover "
                     fill
                     priority={priority}
                     alt={product.name}
                     label={{
-                        position: 'center',
+                        position: size === 'full' ? 'center' : 'bottom',
                         title: product.name,
-                        amount: String(product.type === 'configurable' || product.type === 'grouped' || product.type === 'bundle' ? (product.minimumPrice || '0') : (product.price || '0')),
+                        amount: String(product.type === 'configurable' ? (product.minimumPrice || '0') : (product.price || '0')),
                         currencyCode: 'USD',
                     }}
                 />
@@ -107,26 +118,26 @@ export const ThreeItemGrid: FC<ThreeItemGridProps> = ({ title, description, prod
     const [firstProduct, secondProduct, thirdProduct] = products;
 
     return (
-        <section className="pt-6 sm:pt-12 lg:pt-20">
+        <section className="pt-8 sm:pt-12 lg:pt-20">
             <div className="md:max-w-4.5xl mx-auto mb-10 w-auto px-0 text-center md:px-36">
                 <h1 className="mb-4 font-outfit text-xl md:text-4xl font-semibold text-black dark:text-white">
                     {title}
                 </h1>
-                <p className="text-sm md:text-lg font-normal text-selected-black dark:text-selected-white">
+                <p className="text-sm md:text-base font-normal text-black/60 dark:text-neutral-300">
                     {description}
                 </p>
             </div>
 
-            <div className="hidden lg:grid gap-4 lg:grid-cols-6 lg:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
+            <div className="hidden md:grid gap-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
                 <ThreeItemGridItem product={firstProduct} size="full" priority={true} />
                 <ThreeItemGridItem product={secondProduct} size="half" priority={true} />
                 <ThreeItemGridItem product={thirdProduct} size="half" />
             </div>
 
-            <div className="grid lg:hidden gap-4 grid-cols-1">
-                <MobileThreeItemGridItem product={firstProduct} priority={true} />
-                <MobileThreeItemGridItem product={secondProduct} priority={true} />
-                <MobileThreeItemGridItem product={thirdProduct} />
+            <div className="grid md:hidden gap-4 grid-cols-1 xxs:grid-cols-2 lg:max-h-[calc(100vh-200px)]">
+                <MobileThreeItemGridItem product={firstProduct} size="full" priority={true} />
+                <MobileThreeItemGridItem product={secondProduct} size="half" priority={true} />
+                <MobileThreeItemGridItem product={thirdProduct} size="half" />
             </div>
         </section>
     );

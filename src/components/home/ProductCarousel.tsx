@@ -3,7 +3,6 @@ import { cachedGraphQLRequest } from "@/utils/hooks/useCache";
 import { ThreeItemGrid } from "./ThreeItemGrid";
 import Theme from "./ProductCarouselTheme";
 import { GET_PRODUCTS } from "@/graphql";
-import { ProductsResponse } from "@/components/catalog/type";
 
 interface ProductCarouselProps {
   options: {
@@ -20,8 +19,6 @@ const ProductCarousel: FC<ProductCarouselProps> = async ({
   sortOrder,
 }) => {
   const { filters, title } = options;
-  let products: any[] = [];
-
   try {
     const { sort, limit, ...rest } = filters || {};
     const filterObject: Record<string, string> = {};
@@ -46,7 +43,7 @@ const ProductCarousel: FC<ProductCarouselProps> = async ({
       reverse = true;
     }
 
-    const data = await cachedGraphQLRequest<ProductsResponse>(
+    const data = await cachedGraphQLRequest<any>(
       "home",
       GET_PRODUCTS,
       {
@@ -57,8 +54,30 @@ const ProductCarousel: FC<ProductCarouselProps> = async ({
       }
     );
 
-    products =
-      data?.products?.edges?.slice(0, 8).map((edge) => edge.node) || [];
+    const products =
+      data?.products?.edges?.slice(0, 8).map((edge: any) => edge.node) || [];
+
+    if (!products.length) {
+      return null;
+    }
+
+    if (sortOrder === 2) {
+      return (
+        <ThreeItemGrid
+          title={title || "Products"}
+          description="Discover the latest trends! Fresh products just added—shop new styles, tech, and essentials before they're gone."
+          products={products.slice(0, 3)}
+        />
+      );
+    }
+
+    return (
+      <Theme
+        title={title || "Products"}
+        description="Discover the latest trends! Fresh products just added—shop new styles, tech, and essentials before they're gone."
+        products={products}
+      />
+    );
   } catch (error) {
     console.error("Error fetching products for carousel:", {
       title,
@@ -67,28 +86,6 @@ const ProductCarousel: FC<ProductCarouselProps> = async ({
     });
     return null;
   }
-
-  if (!products.length) {
-    return null;
-  }
-
-  if (sortOrder === 2) {
-    return (
-      <ThreeItemGrid
-        title={title || "Products"}
-        description="Discover the latest trends! Fresh products just added—shop new styles, tech, and essentials before they're gone."
-        products={products.slice(0, 3)}
-      />
-    );
-  }
-
-  return (
-    <Theme
-      title={title || "Products"}
-      description="Discover the latest trends! Fresh products just added—shop new styles, tech, and essentials before they're gone."
-      products={products}
-    />
-  );
 };
 
 export default ProductCarousel;

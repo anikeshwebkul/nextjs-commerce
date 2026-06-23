@@ -1,14 +1,17 @@
 "use client";
 
 import { CartCheckoutPageSkeleton } from "@/components/common/skeleton/CheckoutSkeleton";
-import { useQuery } from "@apollo/client/react";
+import { useQuery } from "@apollo/client";
 import PaymentMethod from "./PaymentMethod";
 import { FC } from "react";
 import { GET_CHECKOUT_PAYMENT_METHODS } from "@/graphql";
 import { getCartToken } from "@/utils/getCartToken";
 
 const Payment: FC<{
-  selectedPayment?: string;
+  selectedPayment?: {
+    method: string;
+    methodTitle?: string;
+  };
   currentStep?: string;
 }> = ({ selectedPayment, currentStep }) => {
   const token = getCartToken();
@@ -23,8 +26,8 @@ const Payment: FC<{
 
   return (
     <PaymentMethod
-      methods={(data as any)?.collectionPaymentMethods}
-      selectedPayment={selectedPayment}
+      methods={data?.collectionPaymentMethods}
+      selectedPayment={selectedPayment as any}
       currentStep={currentStep}
     />
   );

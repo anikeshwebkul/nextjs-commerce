@@ -32,11 +32,18 @@ const Email = () => {
     router.push("/checkout?step=address");
   };
 
-  const needsEmail = email === "" || typeof email === "object";
-
   return (
     <>
-      {needsEmail || isOpen ? (
+      {email === "" || typeof email === "object" ? (
+        <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
+          <EmailForm
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            isGuest={isGuest}
+          />
+        </form>
+      ) : isOpen ? (
         <form className="mt-5" onSubmit={handleSubmit(onSubmit)}>
           <EmailForm
             register={register}
@@ -49,15 +56,15 @@ const Email = () => {
         <>
           <div className="mt-4 flex gap-2 justify-between hidden sm:flex">
             <div className="flex">
-              <p className="w-[184px] shrink-0 text-base font-normal text-black/60 dark:text-selected-white">
+              <p className="w-auto text-base font-normal text-black/60 dark:text-white/60 sm:w-[180px]">
                 Email Address
               </p>
-              <p className="font-normal block text-base text-black/60 dark:text-selected-white">{email}</p>
+              <p className="font-normal block text-base text-black/60 dark:text-white/60">{email}</p>
             </div>
             <div>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="cursor-pointer text-base font-normal text-black/[60%] underline dark:text-selected-white"
+              className="cursor-pointer text-base font-normal text-black/[60%] underline dark:text-neutral-300"
             >
               Change
             </button>
@@ -65,14 +72,14 @@ const Email = () => {
           </div>
           <div className=" relative mt-4 flex sm:hidden flex-col justify-end gap-y-2 sm:flex-row sm:justify-between sm:gap-y-0">
             <div className="flex justify-between  flex-1 flex-wrap">
-              <p className="w-[184px] shrink-0 text-base font-normal text-black/60 dark:text-selected-white">
+              <p className="w-auto text-base font-normal text-black/60 dark:text-white/60 sm:w-[192px]">
                 Email Address
               </p>
-              <p className="font-normal block text-base text-black/60 dark:text-selected-white">{email}</p>
+              <p className="font-normal block text-base text-black/60 dark:text-white/60">{email}</p>
             </div>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="cursor-pointer absolute right-0  text-base font-normal text-black/[60%] underline dark:text-selected-white"
+              className="cursor-pointer absolute right-0  text-base font-normal text-black/[60%] underline dark:text-neutral-300"
               style={{ top: "-36px" }}
             >
               Change
@@ -106,14 +113,13 @@ function EmailForm({
           }
         })}
         errorMsg={errors?.email?.message as string}
-        label="Email Address"
-        labelPlacement="outside"
-        placeholder="Enter email address"
+        label="Enter Email *"
+        placeholder="example@gmail.com"
         readOnly={!isGuest}
       />
 
       {isGuest && (
-        <p className="mb-4 mt-6 font-outfit text-base font-normal text-black/[60%] dark:text-selected-white">
+        <p className="mb-4 mt-6 font-outfit text-base font-normal text-black/[60%] dark:text-neutral-300">
           Already have an account? No worries, just{" "}
           <br className="block sm:hidden" />
           <Link

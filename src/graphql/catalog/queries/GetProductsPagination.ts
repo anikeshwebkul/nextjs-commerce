@@ -1,5 +1,9 @@
 import { gql } from "@apollo/client";
 
+/**
+ * Fetch pagination info for products
+ * Lightweight query for pagination controls
+ */
 export const GET_PRODUCTS_PAGINATION = gql`
   query GetProductsPagination(
     $query: String

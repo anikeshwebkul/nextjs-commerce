@@ -14,7 +14,6 @@ export function GridTileImage({
   src,
   alt,
   className,
-  rounded = "rounded-lg",
   ...props
 }: {
   isInteractive?: boolean;
@@ -26,7 +25,6 @@ export function GridTileImage({
     currencyCode: string;
     position?: "bottom" | "center" | "left";
   };
-  rounded?: string;
 } & React.ComponentProps<typeof Image>) {
   const [imgSrc, setImgSrc] = useState<string | undefined>(src as string);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -49,9 +47,8 @@ export function GridTileImage({
   return (
     <div
       className={clsx(
-        "group relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden dark:bg-black",
-        rounded,
-        active ? "ring-2 ring-primary ring-inset" : "",
+        "group relative flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg dark:bg-black",
+        active ? "border-2 border-blue-600" : "border-2 border-transparent",
         {
           relative: label,
         }

@@ -19,9 +19,6 @@ import {
     CREATE_CHECKOUT_PAYMENT_METHODS,
     CREATE_CHECKOUT_ORDER,
     CREATE_PRODUCT_REVIEW,
-    GET_BOOKING_SLOTS,
-    GET_RENTAL_BOOKING_SLOTS,
-    UPDATE_CUSTOMER_PROFILE,
 } from "@/graphql";
 
 const buildOperations = (
@@ -35,8 +32,6 @@ const buildOperations = (
     );
 
 const ALLOWED_OPERATIONS: Record<string, string> = buildOperations({
-    GetBookingSlots: GET_BOOKING_SLOTS,
-    GetRentalBookingSlots: GET_RENTAL_BOOKING_SLOTS,
     createAddProductInCart: CREATE_ADD_PRODUCT_IN_CART,
     RemoveCartItem: REMOVE_CART_ITEM,
     UpdateCartItem: UPDATE_CART_ITEM,
@@ -51,13 +46,12 @@ const ALLOWED_OPERATIONS: Record<string, string> = buildOperations({
     CreateCheckoutPaymentMethod: CREATE_CHECKOUT_PAYMENT_METHODS,
     CreateCheckoutOrder: CREATE_CHECKOUT_ORDER,
     CreateProductReview: CREATE_PRODUCT_REVIEW,
-    updateCustomerProfile: UPDATE_CUSTOMER_PROFILE,
 });
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { operationName, variables, query: clientQuery } = body;
+        const { operationName, variables } = body;
         const guestToken = getAuthToken(req);
 
         if (!operationName || !ALLOWED_OPERATIONS[operationName]) {
@@ -67,7 +61,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const query = clientQuery || ALLOWED_OPERATIONS[operationName];
+        const query = ALLOWED_OPERATIONS[operationName];
 
         let finalVariables = variables;
 
@@ -114,21 +108,10 @@ export async function POST(req: NextRequest) {
 
         if (operationName === 'createAddProductInCart' && body.productId) {
             finalVariables = {
-                ...variables,
-                cartId: variables.cartId ?? null,
+                cartId: body.cartId ?? null,
                 productId: body.productId,
                 quantity: body.quantity,
             };
-        }
-
-        if (operationName === 'updateCustomerProfile') {
-            const { updateCustomerProfile } = await import("@/utils/bagisto");
-            const response = await updateCustomerProfile(variables.input);
-            return NextResponse.json({
-                data: response.data,
-                success: response.success,
-                message: response.message
-            });
         }
 
         const response = await bagistoFetch<any>({

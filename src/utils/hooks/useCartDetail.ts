@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@apollo/client/react";
+import { useMutation } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addItem } from "@/store/slices/cart-slice";
 import { useCallback, useEffect, useState, useRef } from "react";
@@ -17,7 +17,7 @@ export function useCartDetail() {
 
   const [getCartDetailMutation, { data, loading: isLoading, error }] =
     useMutation(GET_CART_ITEM, {
-      onCompleted: (response: any) => {
+      onCompleted: (response) => {
         const cartData = response?.createReadCart?.readCart;
         if (cartData) {
           dispatch(addItem(cartData));
@@ -55,7 +55,7 @@ export function useCartDetail() {
   }, [cart, getCartDetail]);
 
   return {
-    cartData: cart || (data as any)?.createReadCart?.readCart,
+    cartData: cart || data?.createReadCart?.readCart,
     getCartDetail,
     isLoading: isLoading || (isInFlight && !cart),
     error,

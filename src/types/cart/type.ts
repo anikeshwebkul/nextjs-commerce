@@ -1,3 +1,4 @@
+// Cart Item (node)
 export interface CartItem {
   id: string;
   cartId: string;
@@ -12,33 +13,22 @@ export interface CartItem {
   canChangeQty: boolean;
 }
 
+// GraphQL Edge wrapper
 export interface CartItemEdge {
   node: CartItem;
 }
 
+// Cart Item Edge for Modal (same structure as CartItemEdge)
 export interface CartItemEdgeForModal {
   node: CartItem;
 }
 
-export interface CartSummaryView {
-  items?: CartItemsConnection;
-  itemsQty?: number;
-  subtotal?: number;
-  taxAmount?: number;
-  shippingAmount?: number;
-  grandTotal?: number;
-  isGuest?: boolean;
-  customerEmail?: string | null;
-  selectedShippingRate?: string | null;
-  selectedShippingRateTitle?: string | null;
-  paymentMethod?: string | null;
-  paymentMethodTitle?: string | null;
-}
-
+// Items connection
 export interface CartItemsConnection {
   edges: CartItemEdge[];
 }
 
+// Read Cart
 export interface ReadCart {
   id: string;
   itemsCount: number;
@@ -54,10 +44,12 @@ export interface ReadCart {
   paymentMethodTitle: string | null;
 }
 
+// createReadCart payload
 export interface CreateReadCart {
   readCart: ReadCart;
 }
 
+// Mutation response data
 export interface GetCartItemData {
   createReadCart: CreateReadCart;
 }
@@ -66,6 +58,7 @@ export interface ReadCartOperation {
   data: GetCartItemData;
 }
 
+// Add Product In Cart
 export interface AddToCartItem {
   id: string;
   cartId: string;
@@ -123,6 +116,7 @@ export interface AddToCartOperation {
   variables: AddToCartVariables;
 }
 
+// Guest Cart Token
 export interface CartToken {
   id: string;
   cartToken: string;
@@ -147,6 +141,7 @@ export interface CreateCartTokenOperation {
   variables: CreateCartTokenVariables;
 }
 
+// Merge Cart
 
 export interface MergeCartItem {
   id: string;
@@ -190,6 +185,7 @@ export interface CreateMergeCartOperation {
   variables: CreateMergeCartVariables;
 }
 
+// Remove Cart Item
 export interface RemoveCartItemNode {
   id: string;
   cartId: string;
@@ -241,6 +237,7 @@ export interface RemoveCartItemOperation {
   variables: RemoveCartItemVariables;
 }
 
+// Update Cart Item
 export interface UpdateCartItemNode {
   id: string;
   cartId: string;

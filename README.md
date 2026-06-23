@@ -51,7 +51,7 @@ Bagisto Open Source Headless eCommerce is optimized to deliver a **100/100 Core 
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** 20+ and **npm**
+- **Node.js** 18+ and **pnpm**
 - Check Bagisto [backend requirement detail](https://devdocs.bagisto.com/2.3/introduction/requirements.html#server-configuration)
 
 ---
@@ -124,43 +124,26 @@ vercel env pull
 **Run the development server:**
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 **Build for production:**
 
 ```bash
-npm run build
-npm run start
+pnpm build
+pnpm start
 ```
 
 ---
 
 ## Usage
 
-Install dependencies:
-
-```bash
-npm install
-```
-
 Start the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
-Access the store at: [http://localhost:3000](http://localhost:3000)
-
-### Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start the Next.js development server |
-| `npm run build` | Create an optimized production build |
-| `npm run start` | Run the production server |
-| `npm run lint` | Lint the codebase with ESLint |
-| `npm run lint:fix` | Lint and auto-fix issues |
-| `npm run typecheck` | Type-check the project with `tsc` |
+Access the store at:[http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -189,22 +172,6 @@ Both guest and logged-in users can proceed through checkout, selecting shipping 
 Once the order is placed, it is instantly synchronized with the Bagisto backend, enabling smooth order processing and management.
 
 ![Bagisto Headless Commerce Image](https://raw.githubusercontent.com/bagisto/temp-media/refs/heads/master/bagisto-headless-commerce-cart-checkout.png)
-
-## Customer Panel
-
-Registered customers get a dedicated account dashboard to manage their profile and activity across the store. Authentication is handled securely via **NextAuth.js**, ensuring each customer's data stays protected.
-
-The customer panel includes:
-
-- **Profile** – View and edit personal details, including name, email, and password.
-- **Addresses** – Create, edit, and remove multiple shipping and billing addresses for faster checkout.
-- **Orders** – Browse complete order history and open any order to view its detailed summary and status.
-- **Downloadable Products** – Access and download purchased digital products from one place.
-- **Reviews** – Track and manage product reviews submitted by the customer.
-- **Wishlist** – Save favorite products to revisit and purchase later.
-- **Compare** – Add products to a comparison list to evaluate their attributes side by side.
-
-All customer actions are synchronized in real time with the Bagisto backend through its GraphQL APIs.
 
 ## Community
 Get Bagisto Headless Commerce support on [Facebook Group](https://www.facebook.com/groups/bagisto) and [Forum](https://forums.bagisto.com/)

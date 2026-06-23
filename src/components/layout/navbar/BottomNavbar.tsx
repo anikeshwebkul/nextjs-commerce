@@ -1,7 +1,10 @@
-import { usePathname } from "next/navigation";
+"use client";
+
+import Cart from "@components/cart";
 import { CategoryIcon } from "@components/common/icons/CategoryIcon";
 import { HomeIcon } from "@components/common/icons/HomeIcon";
 import { IconSkeleton } from "@components/common/skeleton/IconSkeleton";
+import UserAccount from "@components/customer/credentials";
 import Link from "next/link";
 import { Suspense, memo } from "react";
 import clsx from "clsx";
@@ -12,7 +15,7 @@ import OpenAuth from "@components/customer/OpenAuth";
 type Tab = "home" | "category" | "cart" | "account" | null;
 
 const BottomNavbar = memo(function BottomNavbar({
-  onMenuOpen: _onMenuOpen,
+  onMenuOpen,
   activeTab,
   setActiveTab,
 }: {
@@ -21,41 +24,23 @@ const BottomNavbar = memo(function BottomNavbar({
   setActiveTab: (tab: Tab) => void;
 }) {
   const cartDetail = useAppSelector((state) => state.cartDetail);
-  const pathname = usePathname();
-
-  const isHidden = [
-    "/customer/forget-password",
-    "/account/orders",
-    "/account/downloadable-products",
-    "/compare",
-    "/account/reviews",
-    "/account/addresses",
-    "/account/addresses/create",
-    "/account/wishlist"
-  ].includes(pathname) ||
-    pathname.startsWith("/account/orders/view/") ||
-    pathname.startsWith("/account/addresses/edit/");
-
-  if (isHidden) {
-    return null;
-  }
-
   const itemBase =
-    "flex flex-col items-center justify-center gap-[4px] pt-[6px] pb-[6px] w-[71px] h-[64px] sm:w-[160px] sm:h-[64px] transition-colors cursor-pointer";
+    "flex flex-col items-center gap-1 text-xs font-semibold py-2 rounded-lg transition-colors cursor-pointer";
 
   const getIconWrapperClass = (tab: Tab) =>
     clsx(
-      "flex shrink-0 items-center justify-center rounded-[16px] transition-all duration-300 w-[56px] h-[32px]",
+      "flex items-center justify-center rounded-full transition-all duration-300 px-6 py-1",
       activeTab === tab
-        ? "bg-selected-color dark:bg-selected-bg-bottom-dark text-black dark:text-white"
-        : "bg-transparent text-neutral-900 dark:text-selected-white"
+        ? "bg-selected-color dark:bg-selected-bg-bottom-dark dark:text-selected-bottom-dark"
+        : "bg-transparent text-neutral-900 dark:text-neutral-400"
     );
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 lg:hidden">
-      <nav className="h-[64px] border-t border-[#0000001A] bg-white dark:border-surface-darker dark:bg-surface-darker px-[8px] sm:px-[16px]">
-        <div className="flex h-full items-center justify-between px-[16px] min-[412px]:gap-[32px]">
+      <nav className="px-3 h-16 border-t border-neutral-200 bg-white dark:border-neutral-800 dark:bg-black">
+        <div className="flex h-full items-center justify-between">
 
+          {/* Home */}
           <Link
             href="/"
             aria-label="Go to Home Page"
@@ -65,45 +50,50 @@ const BottomNavbar = memo(function BottomNavbar({
             <div className={getIconWrapperClass("home")}>
               <HomeIcon />
             </div>
-            <span className={activeTab === "home" ? "font-semibold font-[14px]" : "font-normal font-[14px]"}>Home</span>
+            <span>Home</span>
           </Link>
 
-          <Link
-            href="/categories"
-            aria-label="Go to Categories"
-            onClick={() => setActiveTab("category")}
+          {/* Categories */}
+          <button
+            onClick={() => {
+              setActiveTab("category");
+              onMenuOpen();
+            }}
+            type="button"
             className={itemBase}
           >
             <div className={getIconWrapperClass("category")}>
               <CategoryIcon />
             </div>
-            <span className={activeTab === "category" ? "font-semibold font-[14px]" : "font-normal font-[14px]"}>Categories</span>
-          </Link>
+            <span>Categories</span>
+          </button>
 
-          <Link
-            href="/cart"
-            aria-label="Go to Cart"
-            onClick={() => setActiveTab("cart")}
+          {/* Cart */}
+          <Cart
             className={itemBase}
+            onOpen={() => setActiveTab("cart")}
+            onClose={() => setActiveTab(null)}
+            isOpen={activeTab === "cart"}
           >
             <div className={getIconWrapperClass("cart")}>
-              <OpenCart quantity={cartDetail?.cart?.itemsQty} className="!h-6 !w-6" />
+              <OpenCart quantity={cartDetail?.cart?.itemsQty} />
             </div>
-            <span className={activeTab === "cart" ? "font-semibold font-[14px]" : "font-normal font-[14px]"}>Cart</span>
-          </Link>
+            <span>Cart</span>
+          </Cart>
 
+          {/* Account */}
           <Suspense fallback={<IconSkeleton />}>
-            <Link
-              href="/account"
-              aria-label="Go to Account"
-              onClick={() => setActiveTab("account")}
+            <UserAccount
               className={itemBase}
+              onOpen={() => setActiveTab("account")}
+              onClose={() => setActiveTab(null)}
+              isOpen={activeTab === "account"}
             >
               <div className={getIconWrapperClass("account")}>
-                <OpenAuth className="!h-6 !w-6" />
+                <OpenAuth />
               </div>
-              <span className={activeTab === "account" ? "font-semibold font-[14px]" : "font-normal font-[14px]"}>Account</span>
-            </Link>
+              <span>Account</span>
+            </UserAccount>
           </Suspense>
 
         </div>
